@@ -7,27 +7,15 @@ namespace PhotonTransport
     {
 
         public double Rspecular;
-        public LayerProperties newLayer0 = new LayerProperties();
-        public LayerProperties newLayer1 = new LayerProperties();
-        public LayerProperties newLayer2 = new LayerProperties();
-
-        public List<LayerProperties> layerList = new List<LayerProperties>();
-
-        Transport()
-        {
-            layerList.Add(newLayer0);
-            layerList.Add(newLayer1);
-            layerList.Add(newLayer2);
-        }
-
+        
         public double CalculateRspecular()
         {
-            var temp = (layerList[0].n - layerList[1].n) / (layerList[0].n + layerList[1].n);
+            var temp = (LayerProperties.layerList[0].n - LayerProperties.layerList[1].n) / (LayerProperties.layerList[0].n + LayerProperties.layerList[1].n);
             var rsp1 = temp * temp;
             Rspecular = rsp1;
-            if (layerList[1].mua == 0.0 && layerList[1].mus == 0.0)
+            if (LayerProperties.layerList[1].mua == 0.0 && LayerProperties.layerList[1].mus == 0.0)
             {
-                temp = (layerList[1].n - layerList[2].n) / (layerList[1].n + layerList[2].n);
+                temp = (LayerProperties.layerList[1].n - LayerProperties.layerList[2].n) / (LayerProperties.layerList[1].n + LayerProperties.layerList[2].n);
                 var rsp2 = temp * temp;
 
                 var rsp = rsp1 + ((Math.Pow(1 - rsp1, 2)) * rsp2) / (1 - rsp1 * rsp2);
@@ -51,11 +39,11 @@ namespace PhotonTransport
             PhotonPacket.uy = 0.0;
             PhotonPacket.uz = 1.0;
 
-            if (layerList[1].mua == 0.0 && layerList[1].mus == 0.0)
+            if (LayerProperties.layerList[1].mua == 0.0 && LayerProperties.layerList[1].mus == 0.0)
             {
                 //glass 
                 PhotonPacket.layer = 2;
-                PhotonPacket.z = layerList[2].z0;
+                PhotonPacket.z = LayerProperties.layerList[2].z0;
             }
         }
 
@@ -64,9 +52,9 @@ namespace PhotonTransport
         {
             double dl_b;
             if (PhotonPacket.uz > 0.0)
-                dl_b = (layerList[PhotonPacket.layer].z1 - PhotonPacket.z)/ PhotonPacket.uz;
+                dl_b = (LayerProperties.layerList[PhotonPacket.layer].z1 - PhotonPacket.z)/ PhotonPacket.uz;
             else if (PhotonPacket.uz < 0.0)
-                dl_b = (layerList[PhotonPacket.layer].z0 - PhotonPacket.z)/ PhotonPacket.uz;
+                dl_b = (LayerProperties.layerList[PhotonPacket.layer].z0 - PhotonPacket.z)/ PhotonPacket.uz;
             else
                 dl_b = 0.0;
 
@@ -76,8 +64,8 @@ namespace PhotonTransport
 
         public void StepSizeInTissue()
         {
-            var mua = layerList[PhotonPacket.layer].mua;
-            var mus = layerList[PhotonPacket.layer].mus;
+            var mua = LayerProperties.layerList[PhotonPacket.layer].mua;
+            var mus = LayerProperties.layerList[PhotonPacket.layer].mus;
 
             if(PhotonPacket.sleft == 0.0)
             {
@@ -107,10 +95,10 @@ namespace PhotonTransport
             var uz1 = 0.0;
             var reflectance1 = 0.0;
             var layer = PhotonPacket.layer;
-            var ni = layerList[layer].n;
-            var nt = layerList[layer - 1].n;
+            var ni = LayerProperties.layerList[layer].n;
+            var nt = LayerProperties.layerList[layer - 1].n;
 
-            if (-uz <= layerList[layer].cos_crit0)
+            if (-uz <= LayerProperties.layerList[layer].cos_crit0)
                 reflectance1 = 1.0;     //total internal reflection
 
             else
@@ -165,10 +153,10 @@ namespace PhotonTransport
             var uz1 = 0.0;
             var reflectance1 = 0.0;
             var layer = PhotonPacket.layer;
-            var ni = layerList[layer].n;
-            var nt = layerList[layer + 1].n;
+            var ni = LayerProperties.layerList[layer].n;
+            var nt = LayerProperties.layerList[layer + 1].n;
 
-            if (uz <= layerList[layer].cos_crit1)
+            if (uz <= LayerProperties.layerList[layer].cos_crit1)
                 reflectance1 = 1.0;
             else
                 (reflectance1,uz1) = RFresnel(ni, nt, uz);
@@ -351,7 +339,7 @@ namespace PhotonTransport
             {
                 Hop();
                 Drop();
-                Spin(layerList[PhotonPacket.layer].g);
+                Spin(LayerProperties.layerList[PhotonPacket.layer].g);
 
             }
         }
@@ -359,7 +347,7 @@ namespace PhotonTransport
         public void HopDropSpin()
         {
             var layer = PhotonPacket.layer;
-            if(layerList[layer].mua ==0.0 && layerList[layer].mua ==0.0)
+            if(LayerProperties.layerList[layer].mua ==0.0 && LayerProperties.layerList[layer].mua ==0.0)
                 HopInGlass();
             else
                 HopDropSpinInTissue();
@@ -454,8 +442,8 @@ namespace PhotonTransport
             else
                 ir = (int)ird;
 
-            var mua = layerList[layer].mua;
-            var mus = layerList[layer].mus;
+            var mua = LayerProperties.layerList[layer].mua;
+            var mus = LayerProperties.layerList[layer].mus;
 
             var dwa = PhotonPacket.w * mua / (mua + mus);
             PhotonPacket.w -= dwa;
@@ -471,13 +459,13 @@ namespace PhotonTransport
             double dl_b = 0.0;
 
             if (uz > 0.0)
-                dl_b = (layerList[layer].z1 - PhotonPacket.z) / uz;
+                dl_b = (LayerProperties.layerList[layer].z1 - PhotonPacket.z) / uz;
             else if (uz < 0.0)
-                dl_b = (layerList[layer].z0 - PhotonPacket.z) / uz;
+                dl_b = (LayerProperties.layerList[layer].z0 - PhotonPacket.z) / uz;
 
             if (uz != 0.0 && PhotonPacket.s > dl_b)
             {
-                var mut = layerList[layer].mua + layerList[layer].mus;
+                var mut = LayerProperties.layerList[layer].mua + LayerProperties.layerList[layer].mus;
                 PhotonPacket.sleft = (PhotonPacket.s - dl_b) / mut;
                 PhotonPacket.s = dl_b;
                 hit = true;

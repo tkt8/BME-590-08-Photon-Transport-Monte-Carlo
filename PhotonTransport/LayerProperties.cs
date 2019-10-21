@@ -1,13 +1,35 @@
-﻿namespace PhotonTransport
-{
-    public struct LayerProperties
-    {
-        public double z0, z1;  /* z coordinates of a layer. [cm] */
-        public double n;           /* refractive index of a layer. */
-        public double mua;     /* absorption coefficient. [1/cm] */
-        public double mus;     /* scattering coefficient. [1/cm] */
-        public double g;           /* anisotropy. */
+﻿using System.Collections.Generic;
+using System.Xml.Serialization;
 
-        public double cos_crit0, cos_crit1;
+namespace PhotonTransport
+{
+    public static class LayerProperties
+    {
+        public static List<Layers> layerList = new List<Layers>();
+        public struct Layers
+        {
+            public double z0, z1; /* z coordinates of a layer. [cm] */
+            public double n; /* refractive index of a layer. */
+            public double mua; /* absorption coefficient. [1/cm] */
+            public double mus; /* scattering coefficient. [1/cm] */
+            public double g; /* anisotropy. */
+
+            public double cos_crit0, cos_crit1;
+        }
+
+        public static void Init()
+        {
+
+            var newLayer0 = new Layers();
+            var newLayer1 = new Layers();
+            var newLayer2 = new Layers();
+
+
+            layerList.Add(newLayer0);
+            layerList.Add(newLayer1);
+            layerList.Add(newLayer2);
+        }
     }
+
 }
+

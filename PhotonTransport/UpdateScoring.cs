@@ -76,8 +76,8 @@ namespace PhotonTransport
             var numLayers = GridParametersClass.num_layers;
             var dz = GridParametersClass.dz;
 
-            //while((iz + 0.5)*dz >= layerList[i].z1 && i<numLayers) 
-            //    i++;
+            while ((iz + 0.5) * dz >= LayerProperties.layerList[i].z1 && i < numLayers)
+                i++;
 
             return i;
         }
