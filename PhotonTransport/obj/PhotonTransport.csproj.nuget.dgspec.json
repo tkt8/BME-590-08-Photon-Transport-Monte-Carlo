@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\tpk11\\source\\repos\\PhotonTransport\\PhotonTransport.csproj": {}
+    "C:\\Users\\tpk11\\BME-590-08-Photon-Transport-Monte-Carlo\\PhotonTransport\\PhotonTransport.csproj": {}
   },
   "projects": {
-    "C:\\Users\\tpk11\\source\\repos\\PhotonTransport\\PhotonTransport.csproj": {
+    "C:\\Users\\tpk11\\BME-590-08-Photon-Transport-Monte-Carlo\\PhotonTransport\\PhotonTransport.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\tpk11\\source\\repos\\PhotonTransport\\PhotonTransport.csproj",
+        "projectUniqueName": "C:\\Users\\tpk11\\BME-590-08-Photon-Transport-Monte-Carlo\\PhotonTransport\\PhotonTransport.csproj",
         "projectName": "PhotonTransport",
-        "projectPath": "C:\\Users\\tpk11\\source\\repos\\PhotonTransport\\PhotonTransport.csproj",
+        "projectPath": "C:\\Users\\tpk11\\BME-590-08-Photon-Transport-Monte-Carlo\\PhotonTransport\\PhotonTransport.csproj",
         "packagesPath": "C:\\Users\\tpk11\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\tpk11\\source\\repos\\PhotonTransport\\obj\\",
+        "outputPath": "C:\\Users\\tpk11\\BME-590-08-Photon-Transport-Monte-Carlo\\PhotonTransport\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\tpk11\\AppData\\Roaming\\NuGet\\NuGet.Config",
