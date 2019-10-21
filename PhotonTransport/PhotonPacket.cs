@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace PhotonTransport
+﻿namespace PhotonTransport
 {
-    public class PhotonPacket
+    public static class PhotonPacket
     {
-        public double x, y, z; /* Cartesian coordinates.[cm] */
-        public double ux, uy, uz;/* directional cosines of a photon. */
-        public double w;           /* weight. */
-        public bool dead;       /* 1 if photon is terminated. */
-        public short layer;        /* index to layer where the photon */
-                                   /* packet resides. */
-        public double s;           /* current step size. [cm]. */
-        public double sleft;
+        public static double x, y, z; /* Cartesian coordinates.[cm] */
+        public static double ux, uy, uz;/* directional cosines of a photon. */
+        public static double w;           /* weight. */
+        public static bool dead;       /* 1 if photon is terminated. */
+        public static short layer;        /* index to layer where the photon */
+                                          /* packet resides. */
+        public static double s;           /* current step size. [cm]. */
+        public static double sleft;
     }
 }

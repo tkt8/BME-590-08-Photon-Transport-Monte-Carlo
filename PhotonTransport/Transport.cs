@@ -1,11 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Data.Common;
-using System.Runtime.ExceptionServices;
-using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace PhotonTransport
 {
@@ -13,12 +7,9 @@ namespace PhotonTransport
     {
 
         public double Rspecular;
-        public PhotonPacket newPhoton = new PhotonPacket();
         public LayerProperties newLayer0 = new LayerProperties();
         public LayerProperties newLayer1 = new LayerProperties();
         public LayerProperties newLayer2 = new LayerProperties();
-        public Scoring score = new Scoring();
-        public InputParametersIndependentRun newInput = new InputParametersIndependentRun();
 
         public List<LayerProperties> layerList = new List<LayerProperties>();
 
@@ -47,24 +38,24 @@ namespace PhotonTransport
         }
         public void LaunchPhoton()
         {
-            newPhoton.w = 1.0 - Rspecular;
-            newPhoton.dead = false;
-            newPhoton.layer = 1;
-            newPhoton.s = 0;
-            newPhoton.sleft = 0;
+            PhotonPacket.w = 1.0 - Rspecular;
+            PhotonPacket.dead = false;
+            PhotonPacket.layer = 1;
+            PhotonPacket.s = 0;
+            PhotonPacket.sleft = 0;
 
-            newPhoton.x = 0.0;
-            newPhoton.y = 0.0;
-            newPhoton.z = 0.0;
-            newPhoton.ux = 0.0;
-            newPhoton.uy = 0.0;
-            newPhoton.uz = 1.0;
+            PhotonPacket.x = 0.0;
+            PhotonPacket.y = 0.0;
+            PhotonPacket.z = 0.0;
+            PhotonPacket.ux = 0.0;
+            PhotonPacket.uy = 0.0;
+            PhotonPacket.uz = 1.0;
 
             if (layerList[1].mua == 0.0 && layerList[1].mus == 0.0)
             {
                 //glass 
-                newPhoton.layer = 2;
-                newPhoton.z = layerList[2].z0;
+                PhotonPacket.layer = 2;
+                PhotonPacket.z = layerList[2].z0;
             }
         }
 
@@ -72,33 +63,33 @@ namespace PhotonTransport
         public void StepSizeInGlass()
         {
             double dl_b;
-            if (newPhoton.uz > 0.0)
-                dl_b = (layerList[newPhoton.layer].z1 - newPhoton.z)/ newPhoton.uz;
-            else if (newPhoton.uz < 0.0)
-                dl_b = (layerList[newPhoton.layer].z0 - newPhoton.z)/ newPhoton.uz;
+            if (PhotonPacket.uz > 0.0)
+                dl_b = (layerList[PhotonPacket.layer].z1 - PhotonPacket.z)/ PhotonPacket.uz;
+            else if (PhotonPacket.uz < 0.0)
+                dl_b = (layerList[PhotonPacket.layer].z0 - PhotonPacket.z)/ PhotonPacket.uz;
             else
                 dl_b = 0.0;
 
-            newPhoton.s = dl_b;
+            PhotonPacket.s = dl_b;
 
         }
 
         public void StepSizeInTissue()
         {
-            var mua = layerList[newPhoton.layer].mua;
-            var mus = layerList[newPhoton.layer].mus;
+            var mua = layerList[PhotonPacket.layer].mua;
+            var mus = layerList[PhotonPacket.layer].mus;
 
-            if(newPhoton.sleft == 0.0)
+            if(PhotonPacket.sleft == 0.0)
             {
                 //Make new Step
                 var rnd = GenerateRandomNumber();
                 while (rnd <= 0.0)
-                    newPhoton.s = -Math.Log(rnd) / (mua + mus);
+                    PhotonPacket.s = -Math.Log(rnd) / (mua + mus);
             }
             else
             {
-                newPhoton.s = newPhoton.sleft / (mua + mus);
-                newPhoton.sleft = 0.0;
+                PhotonPacket.s = PhotonPacket.sleft / (mua + mus);
+                PhotonPacket.sleft = 0.0;
             }
 
         }
@@ -112,10 +103,10 @@ namespace PhotonTransport
 
         public void CrossUpOrNot()
         {
-            var uz = newPhoton.uz;
+            var uz = PhotonPacket.uz;
             var uz1 = 0.0;
             var reflectance1 = 0.0;
-            var layer = newPhoton.layer;
+            var layer = PhotonPacket.layer;
             var ni = layerList[layer].n;
             var nt = layerList[layer - 1].n;
 
@@ -128,20 +119,20 @@ namespace PhotonTransport
             
             if(layer ==1 && reflectance1 < 1.0)
             {
-                newPhoton.uz = -uz1;
+                PhotonPacket.uz = -uz1;
                 RecordR(reflectance1);
-                newPhoton.uz = -uz;
+                PhotonPacket.uz = -uz;
             }
             else if (GenerateRandomNumber()> reflectance1)
             {
-                newPhoton.layer--;
-                newPhoton.ux *= ni / nt;
-                newPhoton.uy *= ni / nt;
-                newPhoton.uz = -uz1;
+                PhotonPacket.layer--;
+                PhotonPacket.ux *= ni / nt;
+                PhotonPacket.uy *= ni / nt;
+                PhotonPacket.uz = -uz1;
             }
             else
             {
-                newPhoton.uz = -uz;
+                PhotonPacket.uz = -uz;
             }
 
 
@@ -149,31 +140,31 @@ namespace PhotonTransport
             {
                 if (layer == 1)
                 {
-                    newPhoton.uz = -uz1;
+                    PhotonPacket.uz = -uz1;
                     RecordR(0.0);
-                    newPhoton.dead = true;
+                    PhotonPacket.dead = true;
                 }
 
                 else
                 {
-                    newPhoton.layer--;
-                    newPhoton.ux *= ni / nt;
-                    newPhoton.uy *= ni / nt;
-                    newPhoton.uz = -uz1;
+                    PhotonPacket.layer--;
+                    PhotonPacket.ux *= ni / nt;
+                    PhotonPacket.uy *= ni / nt;
+                    PhotonPacket.uz = -uz1;
                 }
 
             }
             else
-                newPhoton.uz = -uz;
+                PhotonPacket.uz = -uz;
         }
 
 
         public void CrossDownOrNot()
         {
-            var uz = newPhoton.uz;
+            var uz = PhotonPacket.uz;
             var uz1 = 0.0;
             var reflectance1 = 0.0;
-            var layer = newPhoton.layer;
+            var layer = PhotonPacket.layer;
             var ni = layerList[layer].n;
             var nt = layerList[layer + 1].n;
 
@@ -182,96 +173,96 @@ namespace PhotonTransport
             else
                 (reflectance1,uz1) = RFresnel(ni, nt, uz);
 
-            if (layer == newInput.num_layers && reflectance1 < 1.0)
+            if (layer == GridParametersClass.num_layers && reflectance1 < 1.0)
             {
-                newPhoton.uz = uz1;
+                PhotonPacket.uz = uz1;
                 RecordT(reflectance1);
-                newPhoton.uz = -uz;
+                PhotonPacket.uz = -uz;
             }
             else if (GenerateRandomNumber() > reflectance1)
             {
-                newPhoton.layer++;
-                newPhoton.ux *= ni / nt;
-                newPhoton.uy *= ni / nt;
-                newPhoton.uz = uz1;
+                PhotonPacket.layer++;
+                PhotonPacket.ux *= ni / nt;
+                PhotonPacket.uy *= ni / nt;
+                PhotonPacket.uz = uz1;
             }
             else
             {
-                newPhoton.uz = -uz;
+                PhotonPacket.uz = -uz;
             }
 
             if (GenerateRandomNumber() > reflectance1)
             {
-                if (layer == newInput.num_layers)
+                if (layer == GridParametersClass.num_layers)
                 {
-                    newPhoton.uz = uz1;
+                    PhotonPacket.uz = uz1;
                     RecordT(0.0);
-                    newPhoton.dead = true;
+                    PhotonPacket.dead = true;
                 }
                 else
                 {
-                    newPhoton.layer++;
-                    newPhoton.ux *= ni / nt;
-                    newPhoton.uy *= ni / nt;
-                    newPhoton.uz = uz1;
+                    PhotonPacket.layer++;
+                    PhotonPacket.ux *= ni / nt;
+                    PhotonPacket.uy *= ni / nt;
+                    PhotonPacket.uz = uz1;
                 }
                 
             }
             else
             {
-                newPhoton.uz = -uz;
+                PhotonPacket.uz = -uz;
             }
         }
 
         public void CrossOrNot()
         {
-            if(newPhoton.uz <0.0)
+            if(PhotonPacket.uz <0.0)
                 CrossUpOrNot();
             else
                 CrossDownOrNot();
         }
         private void RecordT(double reflectance1)
         {
-            //var x = newPhoton.x;
-            //var y = newPhoton.y;
-            //double ir, ia;
+            var x = PhotonPacket.x;
+            var y = PhotonPacket.y;
+            int ir, ia;
 
-            //var ird = Math.Sqrt(x * x + y * y) / newInput.dr;
-            //if (ird > newInput.nr - 1)
-            //    ir = newInput.nr - 1;
-            //else
-            //    ir = ird;
+            var ird = Math.Sqrt(x * x + y * y) / GridParametersClass.dr;
+            if (ird > GridParametersClass.nr - 1)
+                ir = GridParametersClass.nr - 1;
+            else
+                ir =(int) ird;
 
-            //var iad = Math.Acos(newPhoton.uz) / newInput.da;
-            //if (iad > newInput.na - 1)
-            //    ia = newInput.na - 1;
-            //else
-            //    ia = iad;
+            var iad = Math.Acos(PhotonPacket.uz) / GridParametersClass.da;
+            if (iad > GridParametersClass.na - 1)
+                ia = GridParametersClass.na - 1;
+            else
+                ia = (int)iad;
 
-            //score.Tt_ra[ir][ia] += newPhoton.w*(1.0 -reflectance1);
-            //newPhoton.w *= reflectance1;
+            Scoring.Tt_ra[ir][ia] += PhotonPacket.w * (1.0 - reflectance1);
+            PhotonPacket.w *= reflectance1;
         }
 
         private void RecordR(double reflectance1)
         {
-            //var x = newPhoton.x;
-            //var y = newPhoton.y;
-            //double ir, ia;
+            var x = PhotonPacket.x;
+            var y = PhotonPacket.y;
+            int ir, ia;
 
-            //var ird = Math.Sqrt(x * x + y * y) / newInput.dr;
-            //if (ird > newInput.nr - 1)
-            //    ir = newInput.nr - 1;
-            //else
-            //    ir = ird;
+            var ird = Math.Sqrt(x * x + y * y) / GridParametersClass.dr;
+            if (ird > GridParametersClass.nr - 1)
+                ir = GridParametersClass.nr - 1;
+            else
+                ir = (int)ird;
 
-            //var iad = Math.Acos(newPhoton.uz) / newInput.da;
-            //if (iad > newInput.na - 1)
-            //    ia = newInput.na - 1;
-            //else
-            //    ia = iad;
+            var iad = Math.Acos(PhotonPacket.uz) / GridParametersClass.da;
+            if (iad > GridParametersClass.na - 1)
+                ia = GridParametersClass.na - 1;
+            else
+                ia = (int)iad;
 
-            //score.Rd_ra[ir][ia] += newPhoton.w*(1.0 - reflectance1);
-            //newPhoton.w *= reflectance1;
+            Scoring.Rd_ra[ir][ia] += PhotonPacket.w * (1.0 - reflectance1);
+            PhotonPacket.w *= reflectance1;
         }
 
         private (double,double) RFresnel(double n1, double n2, double ca1)
@@ -326,9 +317,9 @@ namespace PhotonTransport
 
         public void HopInGlass()
         {
-            if (newPhoton.uz == 0.0)
+            if (PhotonPacket.uz == 0.0)
             {
-                newPhoton.dead = true;
+                PhotonPacket.dead = true;
             }
             else
             {
@@ -340,12 +331,12 @@ namespace PhotonTransport
 
         private void Hop()
         {
-            var s = newPhoton.s;
+            var s = PhotonPacket.s;
 
 
-            newPhoton.x += s * newPhoton.ux;
-            newPhoton.y += s * newPhoton.uy;
-            newPhoton.z += s * newPhoton.uz;
+            PhotonPacket.x += s * PhotonPacket.ux;
+            PhotonPacket.y += s * PhotonPacket.uy;
+            PhotonPacket.z += s * PhotonPacket.uz;
         }
 
         public void HopDropSpinInTissue()
@@ -360,20 +351,20 @@ namespace PhotonTransport
             {
                 Hop();
                 Drop();
-                Spin(layerList[newPhoton.layer].g);
+                Spin(layerList[PhotonPacket.layer].g);
 
             }
         }
 
         public void HopDropSpin()
         {
-            var layer = newPhoton.layer;
+            var layer = PhotonPacket.layer;
             if(layerList[layer].mua ==0.0 && layerList[layer].mua ==0.0)
                 HopInGlass();
             else
                 HopDropSpinInTissue();
 
-            if (newPhoton.w < newInput.Wth && !newPhoton.dead)
+            if (PhotonPacket.w < GridParametersClass.Wth && !PhotonPacket.dead)
                 Roulette();
         }
 
@@ -381,19 +372,19 @@ namespace PhotonTransport
         {
             const double Chance = 0.1;
 
-            if (newPhoton.w == 0.0)
-                newPhoton.dead = true;
+            if (PhotonPacket.w == 0.0)
+                PhotonPacket.dead = true;
             else if (GenerateRandomNumber() < Chance)
-                newPhoton.w /= Chance;
+                PhotonPacket.w /= Chance;
             else
-                newPhoton.dead = true;
+                PhotonPacket.dead = true;
         }
 
         private void Spin(double g)
         {
-            var ux = newPhoton.ux;
-            var uy = newPhoton.uy;
-            var uz = newPhoton.uz;
+            var ux = PhotonPacket.ux;
+            var uy = PhotonPacket.uy;
+            var uz = PhotonPacket.uz;
 
             var cost = SpinTheta(g);
             var sint = Math.Sqrt(1.0 - cost * cost);
@@ -409,16 +400,16 @@ namespace PhotonTransport
 
             if (Math.Abs(uz) > Math.Cos(0))
             {
-                newPhoton.ux = sint * cosp;
-                newPhoton.uy = sint * sinp;
-                newPhoton.uz = cost * (uz >= 0 ? 1 : -1);
+                PhotonPacket.ux = sint * cosp;
+                PhotonPacket.uy = sint * sinp;
+                PhotonPacket.uz = cost * (uz >= 0 ? 1 : -1);
             }
             else
             {
                 var temp = Math.Sqrt(1.0 - uz * uz);
-                newPhoton.ux = sint * (ux * uz * cosp - uy * sinp) / temp + ux * cost;
-                newPhoton.uy = sint * (uy * uz * cosp + ux * sinp) / temp + uy * cost;
-                newPhoton.uz = -sint * cosp * temp + uz * cost;
+                PhotonPacket.ux = sint * (ux * uz * cosp - uy * sinp) / temp + ux * cost;
+                PhotonPacket.uy = sint * (uy * uz * cosp + ux * sinp) / temp + uy * cost;
+                PhotonPacket.uz = -sint * cosp * temp + uz * cost;
             }
 
 
@@ -445,50 +436,50 @@ namespace PhotonTransport
 
         private void Drop()
         {
-            var x = newPhoton.x;
-            var y = newPhoton.y;
-            double iz, ir;
+            var x = PhotonPacket.x;
+            var y = PhotonPacket.y;
+            int iz, ir;
 
-            var layer = newPhoton.layer;
+            var layer = PhotonPacket.layer;
 
-            var izd = newPhoton.z / newInput.dz;
-            if (izd > newInput.nz - 1)
-                iz = newInput.nz - 1;
+            var izd = PhotonPacket.z / GridParametersClass.dz;
+            if (izd > GridParametersClass.nz - 1)
+                iz = GridParametersClass.nz - 1;
             else
-                iz = izd;
+                iz = (int)izd;
 
-            var ird = Math.Sqrt(x * x + y * y) / newInput.dr;
-            if (ird > newInput.nr - 1)
-                ir = newInput.nr - 1;
+            var ird = Math.Sqrt(x * x + y * y) / GridParametersClass.dr;
+            if (ird > GridParametersClass.nr - 1)
+                ir = GridParametersClass.nr - 1;
             else
-                ir = ird;
+                ir = (int)ird;
 
             var mua = layerList[layer].mua;
             var mus = layerList[layer].mus;
 
-            var dwa = newPhoton.w * mua / (mua + mus);
-            newPhoton.w -= dwa;
+            var dwa = PhotonPacket.w * mua / (mua + mus);
+            PhotonPacket.w -= dwa;
 
-            //score.A_rz[ir][iz] += dwa;
+            Scoring.A_rz[ir][iz] += dwa;
         }
 
         private bool HitBoundary()
         {
-            var layer = newPhoton.layer;
-            var uz = newPhoton.uz;
+            var layer = PhotonPacket.layer;
+            var uz = PhotonPacket.uz;
             bool hit;
             double dl_b = 0.0;
 
             if (uz > 0.0)
-                dl_b = (layerList[layer].z1 - newPhoton.z) / uz;
+                dl_b = (layerList[layer].z1 - PhotonPacket.z) / uz;
             else if (uz < 0.0)
-                dl_b = (layerList[layer].z0 - newPhoton.z) / uz;
+                dl_b = (layerList[layer].z0 - PhotonPacket.z) / uz;
 
-            if (uz != 0.0 && newPhoton.s > dl_b)
+            if (uz != 0.0 && PhotonPacket.s > dl_b)
             {
                 var mut = layerList[layer].mua + layerList[layer].mus;
-                newPhoton.sleft = (newPhoton.s - dl_b) / mut;
-                newPhoton.s = dl_b;
+                PhotonPacket.sleft = (PhotonPacket.s - dl_b) / mut;
+                PhotonPacket.s = dl_b;
                 hit = true;
 
             }
