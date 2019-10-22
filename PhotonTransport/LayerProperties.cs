@@ -17,14 +17,14 @@ namespace PhotonTransport
             public double cos_crit0, cos_crit1;
         }
 
-        public static void Init()
+        public static Layers newLayer0 = new Layers();
+        public static Layers newLayer1 = new Layers();
+        public static Layers newLayer2 = new Layers();
+            
+        
+
+        public static void InitList()
         {
-
-            var newLayer0 = new Layers();
-            var newLayer1 = new Layers();
-            var newLayer2 = new Layers();
-
-
             layerList.Add(newLayer0);
             layerList.Add(newLayer1);
             layerList.Add(newLayer2);

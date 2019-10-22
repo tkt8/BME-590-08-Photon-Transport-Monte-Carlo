@@ -18,7 +18,7 @@ namespace PhotonTransport
                 sum = 0.0;
                 for (var ia = 0; ia < na; ia++)
                 {
-                    sum += Scoring.Rd_ra[ir][ia];
+                    sum += Scoring.Rd_ra[ir,ia];
                 }
 
                 Scoring.Rd_r[ir] = sum;
@@ -29,7 +29,7 @@ namespace PhotonTransport
                 sum = 0.0;
                 for (var ir = 0; ir < nr; ir++)
                 {
-                    sum += Scoring.Rd_ra[ir][ia];
+                    sum += Scoring.Rd_ra[ir,ia];
                 }
 
                 Scoring.Rd_a[ia] = sum;
@@ -55,19 +55,19 @@ namespace PhotonTransport
                 sum = 0.0;
                 for (var ir = 0; ir < nr; ir++)
                 {
-                    sum += Scoring.A_rz[ir][iz];
+                    sum += Scoring.A_rz[ir,iz];
                 }
 
                 Scoring.A_z[iz] = sum;
             }
 
-            sum = 0.0;
-            for (var iz = 0; iz < nz; iz++)
-            {
-                sum += Scoring.A_z[iz];
-                Scoring.A_l[IzToLayer(iz)] += Scoring.A_z[iz];
-            }
-            Scoring.A = sum;
+            //sum = 0.0;
+            //for (var iz = 0; iz < nz; iz++)
+            //{
+            //    sum += Scoring.A_z[iz];
+            //    Scoring.A_l[IzToLayer(iz)] += Scoring.A_z[iz];
+            //}
+            //Scoring.A = sum;
         }
 
         private static int IzToLayer(int iz)
@@ -76,7 +76,7 @@ namespace PhotonTransport
             var numLayers = GridParametersClass.num_layers;
             var dz = GridParametersClass.dz;
 
-            while ((iz + 0.5) * dz >= LayerProperties.layerList[i].z1 && i < numLayers)
+            while ((iz + 0.5) * dz >= LayerProperties.layerList[i-1].z1 && i < numLayers)
                 i++;
 
             return i;
@@ -93,7 +93,7 @@ namespace PhotonTransport
             {
                 sum = 0.0;
                 for (var ia = 0; ia < na; ia++) 
-                    sum +=Scoring.Tt_ra[ir][ia];
+                    sum +=Scoring.Tt_ra[ir,ia];
                 Scoring.Tt_r[ir] = sum;
             }
 
@@ -101,7 +101,7 @@ namespace PhotonTransport
             {
                 sum = 0.0;
                 for (var ir = 0; ir < nr; ir++) 
-                    sum += Scoring.Tt_ra[ir][ia];
+                    sum += Scoring.Tt_ra[ir,ia];
                 Scoring.Tt_a[ia] = sum;
             }
 
@@ -126,8 +126,8 @@ namespace PhotonTransport
             for (var ia = 0; ia < na; ia++)
             {
                 scale2 = 1.0 / ((ir + 0.5) * Math.Sin(2.0 * (ia + 0.5) * da) * scale1);
-                Scoring.Rd_ra[ir][ia] *= scale2;
-                Scoring.Tt_ra[ir][ia] *= scale2;
+                Scoring.Rd_ra[ir,ia] *= scale2;
+                Scoring.Tt_ra[ir,ia] *= scale2;
             }
 
             scale1 = 2.0 * Math.PI * dr * dr * GridParametersClass.num_photons;
@@ -170,7 +170,7 @@ namespace PhotonTransport
             /* ir+0.5 to be added. */
             for (var iz = 0; iz < nz; iz++)
             for (var ir = 0; ir < nr; ir++)
-                Scoring.A_rz[ir][iz] /= (ir + 0.5) * scale1;
+                Scoring.A_rz[ir,iz] /= (ir + 0.5) * scale1;
 
             /* Scale A_z. */
             scale1 = 1.0 / (dz * GridParametersClass.num_photons);

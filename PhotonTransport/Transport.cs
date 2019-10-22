@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace PhotonTransport
 {
@@ -52,7 +51,7 @@ namespace PhotonTransport
         {
             double dl_b;
             if (PhotonPacket.uz > 0.0)
-                dl_b = (LayerProperties.layerList[PhotonPacket.layer].z1 - PhotonPacket.z)/ PhotonPacket.uz;
+                dl_b = (LayerProperties.layerList[PhotonPacket.layer-1].z1 - PhotonPacket.z)/ PhotonPacket.uz;
             else if (PhotonPacket.uz < 0.0)
                 dl_b = (LayerProperties.layerList[PhotonPacket.layer].z0 - PhotonPacket.z)/ PhotonPacket.uz;
             else
@@ -71,8 +70,7 @@ namespace PhotonTransport
             {
                 //Make new Step
                 var rnd = GenerateRandomNumber();
-                while (rnd <= 0.0)
-                    PhotonPacket.s = -Math.Log(rnd) / (mua + mus);
+                PhotonPacket.s = -Math.Log(rnd) / (mua + mus);
             }
             else
             {
@@ -96,7 +94,7 @@ namespace PhotonTransport
             var reflectance1 = 0.0;
             var layer = PhotonPacket.layer;
             var ni = LayerProperties.layerList[layer].n;
-            var nt = LayerProperties.layerList[layer - 1].n;
+            var nt = layer>1 ?LayerProperties.layerList[layer - 1].n:1.0;
 
             if (-uz <= LayerProperties.layerList[layer].cos_crit0)
                 reflectance1 = 1.0;     //total internal reflection
@@ -104,29 +102,29 @@ namespace PhotonTransport
             else
                 (reflectance1,uz1) = RFresnel(ni, nt, -uz);
 
-            
-            if(layer ==1 && reflectance1 < 1.0)
-            {
-                PhotonPacket.uz = -uz1;
-                RecordR(reflectance1);
-                PhotonPacket.uz = -uz;
-            }
-            else if (GenerateRandomNumber()> reflectance1)
-            {
-                PhotonPacket.layer--;
-                PhotonPacket.ux *= ni / nt;
-                PhotonPacket.uy *= ni / nt;
-                PhotonPacket.uz = -uz1;
-            }
-            else
-            {
-                PhotonPacket.uz = -uz;
-            }
+
+            //if (layer == 1 && reflectance1 < 1.0)
+            //{
+            //    PhotonPacket.uz = -uz1;
+            //    RecordR(reflectance1);
+            //    PhotonPacket.uz = -uz;
+            //}
+            //else if (GenerateRandomNumber() > reflectance1)
+            //{
+            //    PhotonPacket.layer--;
+            //    PhotonPacket.ux *= ni / nt;
+            //    PhotonPacket.uy *= ni / nt;
+            //    PhotonPacket.uz = -uz1;
+            //}
+            //else
+            //{
+            //    PhotonPacket.uz = -uz;
+            //}
 
 
             if (GenerateRandomNumber() > reflectance1)
             {
-                if (layer == 1)
+                if (layer <= 0)
                 {
                     PhotonPacket.uz = -uz1;
                     RecordR(0.0);
@@ -154,34 +152,34 @@ namespace PhotonTransport
             var reflectance1 = 0.0;
             var layer = PhotonPacket.layer;
             var ni = LayerProperties.layerList[layer].n;
-            var nt = LayerProperties.layerList[layer + 1].n;
+            var nt = layer<2 ?LayerProperties.layerList[layer+1].n:1.0;
 
             if (uz <= LayerProperties.layerList[layer].cos_crit1)
                 reflectance1 = 1.0;
             else
                 (reflectance1,uz1) = RFresnel(ni, nt, uz);
 
-            if (layer == GridParametersClass.num_layers && reflectance1 < 1.0)
-            {
-                PhotonPacket.uz = uz1;
-                RecordT(reflectance1);
-                PhotonPacket.uz = -uz;
-            }
-            else if (GenerateRandomNumber() > reflectance1)
-            {
-                PhotonPacket.layer++;
-                PhotonPacket.ux *= ni / nt;
-                PhotonPacket.uy *= ni / nt;
-                PhotonPacket.uz = uz1;
-            }
-            else
-            {
-                PhotonPacket.uz = -uz;
-            }
+            //if (layer == GridParametersClass.num_layers-1 && reflectance1 < 1.0)
+            //{
+            //    PhotonPacket.uz = uz1;
+            //    RecordT(reflectance1);
+            //    PhotonPacket.uz = -uz;
+            //}
+            //else if (GenerateRandomNumber() > reflectance1)
+            //{
+            //    PhotonPacket.layer++;
+            //    PhotonPacket.ux *= ni / nt;
+            //    PhotonPacket.uy *= ni / nt;
+            //    PhotonPacket.uz = uz1;
+            //}
+            //else
+            //{
+            //    PhotonPacket.uz = -uz;
+            //}
 
             if (GenerateRandomNumber() > reflectance1)
             {
-                if (layer == GridParametersClass.num_layers)
+                if (layer == GridParametersClass.num_layers-1)
                 {
                     PhotonPacket.uz = uz1;
                     RecordT(0.0);
@@ -227,7 +225,7 @@ namespace PhotonTransport
             else
                 ia = (int)iad;
 
-            Scoring.Tt_ra[ir][ia] += PhotonPacket.w * (1.0 - reflectance1);
+            Scoring.Tt_ra[ir,ia] += PhotonPacket.w * (1.0 - reflectance1);
             PhotonPacket.w *= reflectance1;
         }
 
@@ -249,7 +247,7 @@ namespace PhotonTransport
             else
                 ia = (int)iad;
 
-            Scoring.Rd_ra[ir][ia] += PhotonPacket.w * (1.0 - reflectance1);
+            Scoring.Rd_ra[ir,ia] += PhotonPacket.w * (1.0 - reflectance1);
             PhotonPacket.w *= reflectance1;
         }
 
@@ -347,9 +345,9 @@ namespace PhotonTransport
         public void HopDropSpin()
         {
             var layer = PhotonPacket.layer;
-            if(LayerProperties.layerList[layer].mua ==0.0 && LayerProperties.layerList[layer].mua ==0.0)
-                HopInGlass();
-            else
+            //if(LayerProperties.layerList[layer].mua ==0.0 && LayerProperties.layerList[layer].mua ==0.0)
+            //    HopInGlass();
+            //else
                 HopDropSpinInTissue();
 
             if (PhotonPacket.w < GridParametersClass.Wth && !PhotonPacket.dead)
@@ -386,7 +384,7 @@ namespace PhotonTransport
             else
                 sinp = - Math.Sqrt(1.0 - cosp * cosp);
 
-            if (Math.Abs(uz) > Math.Cos(0))
+            if (Math.Abs(uz) > 0.9999)
             {
                 PhotonPacket.ux = sint * cosp;
                 PhotonPacket.uy = sint * sinp;
@@ -413,9 +411,9 @@ namespace PhotonTransport
                 var temp = (1 - d * d) / (1 - d + 2 * d * GenerateRandomNumber());
                 cost = (1 + d * d - temp * temp) / (2 * d);
                 if (cost < -1)
-                    cost = -1;
+                    cost = -1.0;
                 else if (cost > 1)
-                    cost = 1;
+                    cost = 1.0;
                 
             }
 
@@ -448,7 +446,7 @@ namespace PhotonTransport
             var dwa = PhotonPacket.w * mua / (mua + mus);
             PhotonPacket.w -= dwa;
 
-            Scoring.A_rz[ir][iz] += dwa;
+            Scoring.A_rz[ir,iz] += dwa;
         }
 
         private bool HitBoundary()

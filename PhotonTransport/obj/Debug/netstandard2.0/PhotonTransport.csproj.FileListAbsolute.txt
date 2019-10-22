@@ -1,7 +1,6 @@
 C:\Users\tpk11\BME-590-08-Photon-Transport-Monte-Carlo\PhotonTransport\bin\Debug\netstandard2.0\PhotonTransport.deps.json
 C:\Users\tpk11\BME-590-08-Photon-Transport-Monte-Carlo\PhotonTransport\bin\Debug\netstandard2.0\PhotonTransport.dll
 C:\Users\tpk11\BME-590-08-Photon-Transport-Monte-Carlo\PhotonTransport\bin\Debug\netstandard2.0\PhotonTransport.pdb
-C:\Users\tpk11\BME-590-08-Photon-Transport-Monte-Carlo\PhotonTransport\obj\Debug\netstandard2.0\PhotonTransport.csprojAssemblyReference.cache
 C:\Users\tpk11\BME-590-08-Photon-Transport-Monte-Carlo\PhotonTransport\obj\Debug\netstandard2.0\PhotonTransport.AssemblyInfoInputs.cache
 C:\Users\tpk11\BME-590-08-Photon-Transport-Monte-Carlo\PhotonTransport\obj\Debug\netstandard2.0\PhotonTransport.AssemblyInfo.cs
 C:\Users\tpk11\BME-590-08-Photon-Transport-Monte-Carlo\PhotonTransport\obj\Debug\netstandard2.0\PhotonTransport.dll
